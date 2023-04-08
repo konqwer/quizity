@@ -62,23 +62,30 @@ model VerificationToken {
 }
 
 model Quiz {
-    id        String     @id @default(auto()) @map("_id") @db.ObjectId
-    title     String
-    questions Question[]
-    comments  Comment[]
-    author    User       @relation(fields: [authorId], references: [id])
-    authorId  String     @db.ObjectId
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
+    id          String     @id @default(auto()) @map("_id") @db.ObjectId
+    title       String
+    description String
+    questions   Question[]
+    comments    Comment[]
+    votes       Vote[]
+    author      User       @relation(fields: [authorId], references: [id])
+    authorId    String     @db.ObjectId
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+}
+
+type Vote {
+    userId     String  @db.ObjectId
+    isPositive Boolean
 }
 
 type Question {
-    text    String
-    options Option[]
+    question String
+    options  Option[]
 }
 
 type Option {
-    text      String
+    option    String
     isCorrect Boolean
 }
 

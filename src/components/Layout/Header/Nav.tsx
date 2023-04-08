@@ -181,7 +181,7 @@ const Nav: FC<{ sessionData: Session | null }> = ({ sessionData }) => {
       ) : (
         <>
           <Link
-            href="add"
+            href="/create"
             className="flex aspect-square items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-500"
           >
             <FaPlus className="fill-white" />
