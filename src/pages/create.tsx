@@ -34,7 +34,8 @@ const Question: FC<{
   question: Question;
   idx: number;
   dispatch: React.Dispatch<ReducerTypes>;
-}> = ({ question, idx, dispatch }) => {
+  canDelete: boolean;
+}> = ({ question, idx, dispatch, canDelete }) => {
   const [parent] = useAutoAnimate();
 
   return (
@@ -57,7 +58,7 @@ const Question: FC<{
           className="w-full grow bg-transparent text-xl focus:outline-none"
         />
         <div className="flex gap-2 md:gap-8">
-          {idx > 2 && (
+          {canDelete && (
             <button
               onClick={() => dispatch({ type: "removeQuestion", payload: idx })}
             >
@@ -288,14 +289,21 @@ const Create = () => {
       JSON.stringify({ title, desc, questions })
     );
   }, [title, desc, questions]);
+  useEffect(() => {
+    if (descRef.current) {
+      descRef.current.style.height = "0px";
+      descRef.current.style.height =
+        descRef.current.scrollHeight.toString() + "px";
+    }
+  }, [desc]);
 
   return (
     <div className="space-y-16">
-      <h1 className="text-2xl font-bold md:text-5xl">Create new quiz</h1>
+      <h1 className="text-4xl font-bold md:text-5xl">Create new quiz</h1>
       <div className="w-[min(600px,100%)] space-y-8">
         <div className="flex flex-col gap-4">
           <label htmlFor="title" className="text-xl font-bold">
-            Quiz title
+            Title
           </label>
           <input
             onChange={(e) => setTitle(e.target.value)}
@@ -303,12 +311,12 @@ const Create = () => {
             type="text"
             id="title"
             placeholder="Enter a title"
-            className="border-b-2 bg-transparent transition-colors focus:border-indigo-600 focus:outline-none"
+            className="border-b-2 bg-transparent text-xl transition-colors focus:border-indigo-600 focus:outline-none"
           />
         </div>
         <div className="flex flex-col gap-4">
           <label htmlFor="description" className="text-xl font-bold">
-            Quiz description
+            Description
           </label>
           <textarea
             onChange={(e) => setDesc(e.target.value)}
@@ -323,7 +331,7 @@ const Create = () => {
           />
         </div>
       </div>
-      <h1 className="text-2xl font-bold md:text-5xl">Questions:</h1>
+      <h1 className="text-4xl font-bold md:text-5xl">Questions:</h1>
       <div ref={parent} className="flex flex-col gap-8">
         {questions.map((question, idx) => (
           <Question
@@ -331,6 +339,7 @@ const Create = () => {
             idx={idx}
             question={question}
             dispatch={dispatch}
+            canDelete={questions.length > 3}
           />
         ))}
         <button
