@@ -7,21 +7,41 @@ import {
 } from "~/server/api/trpc";
 
 export const quizRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.user.findMany();
-  }),
-
-  getSecretMessage: protectedProcedure.query(({ ctx }) => {
-    // console.log("ctx", ctx);
-    return ctx.session;
+  getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const quiz = await ctx.prisma.quiz.findUnique({
+      where: { id: input },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        author: { select: { name: true, image: true, id: true } },
+        comments: true,
+        likedByIDs: true,
+        savedByIDs: true,
+        views: true,
+        createdAt: true,
+        updatedAt: true,
+        questions: {
+          select: { question: true, options: { select: { option: true } } },
+        },
+      },
+    });
+    if (!quiz) return null;
+    if (!ctx.session) return quiz;
+    // If user seen this quiz in last 10 minutes, don't create a new view
+    const lastView = await ctx.prisma.view.findFirst({
+      where: {
+        quizId: input,
+        userId: ctx.session.user.id,
+        createdAt: { gt: new Date(Date.now() - 1000 * 60 * 10) },
+      },
+    });
+    if (!lastView) {
+      await ctx.prisma.view.create({
+        data: { quizId: input, userId: ctx.session.user.id },
+      });
+    }
+    return quiz;
   }),
   create: protectedProcedure
     .input(
@@ -60,5 +80,69 @@ export const quizRouter = createTRPCRouter({
         data: { title, description, authorId, questions },
       });
       return post;
+    }),
+  like: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
+        where: { id: input },
+        select: { likedByIDs: true },
+      });
+      const user = await ctx.prisma.user.findUniqueOrThrow({
+        where: { id: ctx.session.user.id },
+        select: { likedQuizzesIDs: true },
+      });
+      const likedByIDs = quiz.likedByIDs ?? [];
+      const likedQuizzesIDs = user.likedQuizzesIDs ?? [];
+      const userIndex = likedByIDs.indexOf(ctx.session.user.id);
+      const quizIndex = likedQuizzesIDs.indexOf(input);
+      if (userIndex === -1) {
+        likedByIDs.push(ctx.session.user.id);
+        likedQuizzesIDs.push(input);
+      } else {
+        likedByIDs.splice(userIndex, 1);
+        likedQuizzesIDs.splice(quizIndex, 1);
+      }
+      await ctx.prisma.quiz.update({
+        where: { id: input },
+        data: { likedByIDs },
+      });
+      await ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: { likedQuizzesIDs },
+      });
+      return true;
+    }),
+  save: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
+        where: { id: input },
+        select: { savedByIDs: true },
+      });
+      const user = await ctx.prisma.user.findUniqueOrThrow({
+        where: { id: ctx.session.user.id },
+        select: { savedQuizzesIDs: true },
+      });
+      const savedByIDs = quiz.savedByIDs ?? [];
+      const savedQuizzesIDs = user.savedQuizzesIDs ?? [];
+      const userIndex = savedByIDs.indexOf(ctx.session.user.id);
+      const quizIndex = savedQuizzesIDs.indexOf(input);
+      if (userIndex === -1) {
+        savedByIDs.push(ctx.session.user.id);
+        savedQuizzesIDs.push(input);
+      } else {
+        savedByIDs.splice(userIndex, 1);
+        savedQuizzesIDs.splice(quizIndex, 1);
+      }
+      await ctx.prisma.quiz.update({
+        where: { id: input },
+        data: { savedByIDs },
+      });
+      await ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: { savedQuizzesIDs },
+      });
+      return true;
     }),
 });

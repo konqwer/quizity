@@ -42,14 +42,21 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(auto()) @map("_id") @db.ObjectId
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    Quiz          Quiz[]
+    id              String    @id @default(auto()) @map("_id") @db.ObjectId
+    name            String
+    email           String?   @unique
+    emailVerified   DateTime?
+    image           String
+    accounts        Account[]
+    sessions        Session[]
+    createdQuizzes  Quiz[]    @relation("createdQuizzes")
+    savedQuizzes    Quiz[]    @relation(name: "savedQuizzes", fields: [savedQuizzesIDs], references: [id])
+    savedQuizzesIDs String[]  @db.ObjectId
+    likedQuizzes    Quiz[]    @relation(name: "likedQuizzes", fields: [likedQuizzesIDs], references: [id])
+    likedQuizzesIDs String[]  @db.ObjectId
+    seenQuizzes     Quiz[]    @relation(name: "seenQuizzes", fields: [seendQuizzesIDs], references: [id])
+    seendQuizzesIDs String[]  @db.ObjectId
+    views           View[]
 }
 
 model VerificationToken {
@@ -67,16 +74,26 @@ model Quiz {
     description String
     questions   Question[]
     comments    Comment[]
-    votes       Vote[]
-    author      User       @relation(fields: [authorId], references: [id])
-    authorId    String     @db.ObjectId
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
+    authorId    String     @db.ObjectId
+    author      User       @relation(name: "createdQuizzes", fields: [authorId], references: [id])
+    savedBy     User[]     @relation(name: "savedQuizzes", fields: [savedByIDs], references: [id])
+    savedByIDs  String[]   @db.ObjectId
+    likedBy     User[]     @relation(name: "likedQuizzes", fields: [likedByIDs], references: [id])
+    likedByIDs  String[]   @db.ObjectId
+    seenBy      User[]     @relation(name: "seenQuizzes", fields: [seenByIDs], references: [id])
+    seenByIDs   String[]   @db.ObjectId
+    views       View[]
 }
 
-type Vote {
-    userId     String  @db.ObjectId
-    isPositive Boolean
+model View {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    quizId    String   @db.ObjectId
+    quiz      Quiz     @relation(fields: [quizId], references: [id])
+    userId    String   @db.ObjectId
+    user      User     @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
 }
 
 type Question {
