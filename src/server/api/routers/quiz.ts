@@ -28,12 +28,12 @@ export const quizRouter = createTRPCRouter({
     });
     if (!quiz) return null;
     if (!ctx.session) return quiz;
-    // If user seen this quiz in last 10 minutes, don't create a new view
+    // If user seen this quiz in last hour, don't create a new view
     const lastView = await ctx.prisma.view.findFirst({
       where: {
         quizId: input,
         userId: ctx.session.user.id,
-        createdAt: { gt: new Date(Date.now() - 1000 * 60 * 10) },
+        createdAt: { gt: new Date(Date.now() - 1000 * 60 * 60) },
       },
     });
     if (!lastView) {

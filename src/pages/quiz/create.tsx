@@ -12,6 +12,7 @@ import { api } from "~/utils/api";
 import { z } from "zod";
 import Loading from "~/components/UI/Loading";
 import { useRouter } from "next/router";
+import { signIn, useSession } from "next-auth/react";
 
 interface Question {
   key: number;
@@ -169,6 +170,7 @@ interface formState {
 }
 const Create = () => {
   const descRef = useRef<HTMLTextAreaElement>(null);
+  const { data: sessionData } = useSession();
   const [parent] = useAutoAnimate();
   const [titleError, setTitleError] = useState<string | null>(null);
   const [descError, setDescError] = useState<string | null>(null);
@@ -379,7 +381,7 @@ const Create = () => {
       })),
     }
   );
-
+  const router = useRouter();
   useEffect(() => {
     if (descRef.current) {
       descRef.current.style.height = "0px";
@@ -387,9 +389,7 @@ const Create = () => {
         descRef.current.scrollHeight.toString() + "px";
     }
   }, [formState.description]);
-
   const { mutateAsync: create, isLoading } = api.quiz.create.useMutation();
-  const router = useRouter();
 
   const createHandler = async () => {
     const parsedForm = z
@@ -446,6 +446,8 @@ const Create = () => {
     }
   };
 
+  if (sessionData === undefined) return <div />;
+  if (sessionData === null) return signIn();
   return (
     <div className="space-y-16">
       <h1 className="text-4xl font-bold md:text-5xl">Create new quiz</h1>

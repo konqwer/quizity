@@ -54,8 +54,6 @@ model User {
     savedQuizzesIDs String[]  @db.ObjectId
     likedQuizzes    Quiz[]    @relation(name: "likedQuizzes", fields: [likedQuizzesIDs], references: [id])
     likedQuizzesIDs String[]  @db.ObjectId
-    seenQuizzes     Quiz[]    @relation(name: "seenQuizzes", fields: [seendQuizzesIDs], references: [id])
-    seendQuizzesIDs String[]  @db.ObjectId
     views           View[]
 }
 
@@ -82,8 +80,6 @@ model Quiz {
     savedByIDs  String[]   @db.ObjectId
     likedBy     User[]     @relation(name: "likedQuizzes", fields: [likedByIDs], references: [id])
     likedByIDs  String[]   @db.ObjectId
-    seenBy      User[]     @relation(name: "seenQuizzes", fields: [seenByIDs], references: [id])
-    seenByIDs   String[]   @db.ObjectId
     views       View[]
 }
 

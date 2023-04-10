@@ -67,7 +67,7 @@ const Quiz = () => {
               href="/profile"
               className="flex items-center gap-2 transition-colors hover:text-indigo-600"
             >
-              <h1>by</h1>
+              <span>by</span>
               <Image
                 width="64"
                 height="64"
@@ -75,7 +75,7 @@ const Quiz = () => {
                 alt="Author avatar"
                 className="h-10 w-10 rounded-full"
               />
-              <h1 className="font-bold">{quiz.author.name}</h1>
+              <span className="font-bold">{quiz.author.name}</span>
             </Link>
           )}
           <div className="flex justify-between gap-8 font-semibold text-gray-600 md:justify-end">

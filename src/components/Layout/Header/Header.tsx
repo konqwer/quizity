@@ -29,7 +29,7 @@ const SearchInput = () => {
       <form
         onSubmit={submitHandler}
         className={`flex h-full w-full items-center gap-4 rounded-full bg-gray-200 px-4 py-1.5 ring-2 ring-inset transition-all duration-75 ${
-          focus ? "ring-indigo-500" : "ring-gray-400"
+          focus ? "ring-indigo-500" : "ring-gray-200"
         }`}
       >
         <FaSearch
