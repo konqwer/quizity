@@ -62,9 +62,12 @@ const Quiz = () => {
         </div>
         <div className="flex w-full flex-col gap-8 md:mt-2 md:items-end">
           {sessionData?.user.id === quiz.author.id ? (
-            <button className="h-10 rounded-full bg-indigo-600 px-6 text-sm font-bold text-white">
+            <Link
+              href={`/quiz/edit/${quiz.id}`}
+              className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white"
+            >
               Edit
-            </button>
+            </Link>
           ) : (
             <Link
               href="/profile"

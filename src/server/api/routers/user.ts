@@ -21,7 +21,7 @@ export const userRouter = createTRPCRouter({
   }),
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     // if (ctx.session && ctx.session.user.id === input) return null;
-    const user = await ctx.prisma.user.findUniqueOrThrow({
+    const user = await ctx.prisma.user.findUnique({
       where: { id: input },
       include: {
         createdQuizzes: true,

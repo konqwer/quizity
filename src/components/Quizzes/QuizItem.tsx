@@ -17,9 +17,12 @@ const OwnerTools: FC<{ onRefetch: () => void; quizId: string }> = ({
     });
   return (
     <>
-      <button className="h-10 rounded-full bg-indigo-600 px-6 text-sm font-bold text-white hover:bg-indigo-500">
+      <Link
+        href={`/quiz/edit/${quizId}`}
+        className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white hover:bg-indigo-500"
+      >
         Edit
-      </button>
+      </Link>
       <button
         onClick={() => deleteQuiz(quizId)}
         className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white hover:bg-indigo-500"

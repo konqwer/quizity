@@ -15,9 +15,10 @@ const Profile = () => {
   const { data: user, isError, refetch } = api.user.profile.useQuery();
   const [parent] = useAutoAnimate();
 
-  if (sessionData === null || user === null || isError) return signIn();
+  if (sessionData === null || user === null || isError) return void signIn();
   if (sessionData === undefined || user === undefined)
     return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
+
   return (
     <>
       <div className="mb-12 flex items-center gap-4">
