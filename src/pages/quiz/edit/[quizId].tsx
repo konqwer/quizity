@@ -1,4 +1,4 @@
-import { Question } from "@prisma/client";
+import { type Question } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";

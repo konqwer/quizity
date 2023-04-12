@@ -2,7 +2,6 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Tab } from "@headlessui/react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import QuizItem from "~/components/Quizzes/QuizItem";
 import Loading from "~/components/UI/Loading";
@@ -14,7 +13,6 @@ const Profile = () => {
   const { data: sessionData } = useSession();
   const { data: user, isError, refetch } = api.user.profile.useQuery();
   const [parent] = useAutoAnimate();
-
   if (sessionData === null || user === null || isError) return void signIn();
   if (sessionData === undefined || user === undefined)
     return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
@@ -27,7 +25,7 @@ const Profile = () => {
           width="128"
           height="128"
           alt="avatar"
-          src={user?.image}
+          src={user?.image || "/default-avatar.jpg"}
         />
         <h1 className="text-4xl font-bold md:text-5xl">{user.name}</h1>
       </div>

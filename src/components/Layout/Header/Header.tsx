@@ -92,8 +92,8 @@ const ProfileMenu = () => {
             <Image
               width="64"
               height="64"
-              alt="profile-image"
-              src={sessionData.user.image || ""}
+              alt="avatar"
+              src={sessionData.user.image || "/default-avatar.jpg"}
               className="h-full rounded-full"
             />
           </Menu.Button>
@@ -114,8 +114,8 @@ const ProfileMenu = () => {
                       <Image
                         width="64"
                         height="64"
-                        alt="profile-image"
-                        src={sessionData.user.image || ""}
+                        alt="avatar"
+                        src={sessionData.user.image || "/default-avatar.jpg"}
                         className="aspect-square w-12 rounded-full"
                       />
                       <h1 className="font-bold text-gray-600">

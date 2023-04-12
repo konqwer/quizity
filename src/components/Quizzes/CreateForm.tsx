@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useRef, useEffect, useState, type FC, useReducer } from "react";
 import {
   FaArrowDown,
@@ -10,6 +9,7 @@ import {
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { z } from "zod";
 import Loading from "~/components/UI/Loading";
+import { zodQuiz } from "~/types/zodTypes";
 
 export interface formData {
   title: string;
@@ -175,7 +175,7 @@ const CreateForm: FC<{
   const [parent] = useAutoAnimate();
   const [titleError, setTitleError] = useState<string | null>(null);
   const [descError, setDescError] = useState<string | null>(null);
-  const [formState, dispatch] = useReducer(
+  const [form, dispatch] = useReducer(
     (state: formData, { type, payload }: ReducerTypes): formData => {
       state = {
         ...state,
@@ -398,38 +398,10 @@ const CreateForm: FC<{
       descRef.current.style.height =
         descRef.current.scrollHeight.toString() + "px";
     }
-  }, [formState.description]);
+  }, [form.description]);
 
   const createHandler = async () => {
-    const parsedForm = z
-      .object({
-        title: z.string().min(5, "Title must contain at least 5 characters"),
-        description: z
-          .string()
-          .min(5, "Description must contain at least 5 characters"),
-        questions: z
-          .array(
-            z.object({
-              question: z.string().min(1, "Question title is missing"),
-              options: z
-                .array(
-                  z.object({
-                    option: z.string().min(1, "Option title is missing"),
-                    isCorrect: z.boolean(),
-                  })
-                )
-                .min(2, "Question must contain at least 2 options")
-                .refine(
-                  (options) => options.some((option) => option.isCorrect),
-                  {
-                    message: "At least one option must be correct",
-                  }
-                ),
-            })
-          )
-          .min(3, "Quiz must contain at least 3 questions"),
-      })
-      .safeParse(formState);
+    const parsedForm = zodQuiz.safeParse(form);
     if (parsedForm.success) {
       setIsLoading(true);
       await onSubmit(parsedForm.data as formData);
@@ -458,7 +430,9 @@ const CreateForm: FC<{
 
   return (
     <div className="space-y-16">
-      <h1 className="text-4xl font-bold md:text-5xl">Create new quiz</h1>
+      <h1 className="text-4xl font-bold md:text-5xl">
+        {fillWith ? "Edit " + fillWith.title : "Create new quiz"}
+      </h1>
       <div className="w-[min(600px,100%)] space-y-8">
         <div className="flex flex-col">
           <label htmlFor="title" className="mb-4 text-xl font-bold">
@@ -468,7 +442,7 @@ const CreateForm: FC<{
             onChange={(e) =>
               dispatch({ type: "setTitle", payload: e.target.value })
             }
-            value={formState.title}
+            value={form.title}
             type="text"
             id="title"
             placeholder="Enter a title"
@@ -480,7 +454,7 @@ const CreateForm: FC<{
         </div>
         <div className="flex flex-col">
           <label htmlFor="description" className="mb-4 text-xl font-bold">
-            Description
+            Description <span className="text-sm font-normal">*optional</span>
           </label>
           <textarea
             onChange={(e) =>
@@ -489,7 +463,7 @@ const CreateForm: FC<{
             onKeyDown={(e) => {
               e.key === "Enter" && e.preventDefault();
             }}
-            value={formState.description}
+            value={form.description}
             ref={descRef}
             id="description"
             placeholder="Enter a description"
@@ -502,13 +476,13 @@ const CreateForm: FC<{
       </div>
       <h1 className="text-4xl font-bold md:text-5xl">Questions:</h1>
       <div ref={parent} className="flex flex-col gap-8">
-        {formState.questions.map((question, idx) => (
+        {form.questions.map((question, idx) => (
           <QuestionForm
             key={question.key}
             idx={idx}
             question={question}
             dispatch={dispatch}
-            canDelete={formState.questions.length > 3}
+            canDelete={form.questions.length > 3}
           />
         ))}
         <button

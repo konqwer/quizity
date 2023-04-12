@@ -1,4 +1,4 @@
-import { type Quiz, type User } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,6 +6,7 @@ import React, { type FC } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { api } from "~/utils/api";
 import Loading from "../UI/Loading";
+import { type asPublicQuiz } from "~/types/prismaValidators";
 
 const OwnerTools: FC<{ onRefetch: () => void; quizId: string }> = ({
   onRefetch,
@@ -34,7 +35,7 @@ const OwnerTools: FC<{ onRefetch: () => void; quizId: string }> = ({
 };
 
 const QuizItem: FC<{
-  quiz: Quiz & { author: User };
+  quiz: Prisma.QuizGetPayload<{ select: typeof asPublicQuiz }>;
   onRefetch?: () => void;
 }> = ({ quiz, onRefetch }) => {
   const { data: sessionData } = useSession();
@@ -54,14 +55,14 @@ const QuizItem: FC<{
         <OwnerTools onRefetch={onRefetch} quizId={quiz.id} />
       ) : (
         <Link
-          href={`/profile/${quiz.author?.id}`}
+          href={`/profile/${quiz.author.id}`}
           className="flex items-center gap-2 transition-colors hover:text-indigo-600"
         >
           <span>by</span>
           <Image
             width="64"
             height="64"
-            src={quiz.author?.image || ""}
+            src={quiz.author?.image || "/default-avatar.jpg"}
             alt="Author avatar"
             className="h-10 w-10 rounded-full"
           />

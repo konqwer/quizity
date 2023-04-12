@@ -8,19 +8,28 @@ import Loading from "~/components/UI/Loading";
 import { api } from "~/utils/api";
 
 const QuestionItem: FC<{
-  question: { question: string; options: { option: string }[] };
+  question: {
+    question: string;
+    options: { option: string; isCorrect?: boolean }[];
+  };
 }> = ({ question }) => {
   return (
     <div className="divide-y divide-gray-300 rounded-md bg-gray-200 p-4">
       <h1 className="text-xl font-bold">{question.question}</h1>
       <div className="grid grid-rows-2 gap-2 p-2">
         {question.options.map((option, idx) => (
-          <div key={option.option + idx.toString()} className="">
+          <div key={option.option + idx.toString()}>
             <h2>
-              <span className="text-sm font-bold">
-                {["A", "B", "C", "D"][idx]}.{" "}
+              <span className="mr-2 text-sm font-bold">
+                {["A", "B", "C", "D"][idx]}.
               </span>
-              <span className="text-xl font-semibold text-gray-600">
+              <span
+                className={`text-xl font-semibold  ${
+                  option.isCorrect
+                    ? "text-green-500 underline"
+                    : "text-gray-600"
+                }`}
+              >
                 {option.option}
               </span>
             </h2>
@@ -46,7 +55,6 @@ const Quiz = () => {
   const { mutate: save, isLoading: saveIsLoading } = api.quiz.save.useMutation({
     onSuccess: () => refetch(),
   });
-
   if (quiz === null || isError) return router.back();
   if (quiz === undefined)
     return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
@@ -77,7 +85,7 @@ const Quiz = () => {
               <Image
                 width="64"
                 height="64"
-                src={quiz.author.image}
+                src={quiz.author.image || "/default-avatar.jpg"}
                 alt="Author avatar"
                 className="h-10 w-10 rounded-full"
               />

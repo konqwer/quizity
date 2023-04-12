@@ -5,6 +5,8 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { asOwnFullQuiz, asPublicFullQuiz } from "~/types/prismaValidators";
+import { zodQuiz, zodQuizResult } from "~/types/zodTypes";
 
 export const quizRouter = createTRPCRouter({
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
@@ -16,25 +18,9 @@ export const quizRouter = createTRPCRouter({
       });
       isOwner = ctx.session?.user.id === authorIdQuiz?.authorId;
     }
-    const quiz = await ctx.prisma.quiz.findUnique({
+    const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
       where: { id: input },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        author: { select: { name: true, image: true, id: true } },
-        comments: true,
-        likedByIDs: true,
-        savedByIDs: true,
-        views: true,
-        createdAt: true,
-        updatedAt: true,
-        questions: isOwner
-          ? true
-          : {
-              select: { question: true, options: { select: { option: true } } },
-            },
-      },
+      select: isOwner ? asOwnFullQuiz : asPublicFullQuiz,
     });
     if (!quiz) return null;
     if (!ctx.session) return quiz;
@@ -53,75 +39,19 @@ export const quizRouter = createTRPCRouter({
     }
     return quiz;
   }),
-  create: protectedProcedure
-    .input(
-      z.object({
-        title: z.string().min(5, "Title must contain at least 5 characters"),
-        description: z
-          .string()
-          .min(5, "Description must contain at least 5 characters"),
-        questions: z
-          .array(
-            z.object({
-              question: z.string().min(1, "Question title is missing"),
-              options: z
-                .array(
-                  z.object({
-                    option: z.string().min(1, "Option title is missing"),
-                    isCorrect: z.boolean(),
-                  })
-                )
-                .min(2, "Question must contain at least 2 options")
-                .refine(
-                  (options) => options.some((option) => option.isCorrect),
-                  {
-                    message: "At least one option must be correct",
-                  }
-                ),
-            })
-          )
-          .min(3, "Quiz must contain at least 3 questions"),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { title, description, questions } = input;
-      const authorId = ctx.session.user.id;
-      const quiz = await ctx.prisma.quiz.create({
-        data: { title, description, authorId, questions },
-      });
-      return quiz;
-    }),
+  create: protectedProcedure.input(zodQuiz).mutation(async ({ ctx, input }) => {
+    const { title, description, questions } = input;
+    const authorId = ctx.session.user.id;
+    const quiz = await ctx.prisma.quiz.create({
+      data: { title, description, authorId, questions },
+    });
+    return quiz;
+  }),
   edit: protectedProcedure
     .input(
       z.object({
         id: z.string(),
-        data: z.object({
-          title: z.string().min(5, "Title must contain at least 5 characters"),
-          description: z
-            .string()
-            .min(5, "Description must contain at least 5 characters"),
-          questions: z
-            .array(
-              z.object({
-                question: z.string().min(1, "Question title is missing"),
-                options: z
-                  .array(
-                    z.object({
-                      option: z.string().min(1, "Option title is missing"),
-                      isCorrect: z.boolean(),
-                    })
-                  )
-                  .min(2, "Question must contain at least 2 options")
-                  .refine(
-                    (options) => options.some((option) => option.isCorrect),
-                    {
-                      message: "At least one option must be correct",
-                    }
-                  ),
-              })
-            )
-            .min(3, "Quiz must contain at least 3 questions"),
-        }),
+        data: zodQuiz,
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -216,5 +146,35 @@ export const quizRouter = createTRPCRouter({
         data: { savedQuizzesIDs },
       });
       return true;
+    }),
+  createResult: protectedProcedure
+    .input(zodQuizResult)
+    .mutation(async ({ ctx, input }) => {
+      const { quizId, answers } = input;
+      const userId = ctx.session.user.id;
+      const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
+        where: { id: quizId },
+        select: { questions: true },
+      });
+      // verify answers with questions we got from quiz
+      const verifiedAnswers = answers.map((answer) => {
+        const question = quiz.questions.find(
+          (question) => question.question === answer.question
+        );
+        if (!question) throw new Error("Answers were modified");
+        const options = answer.options.map((option) => {
+          const isCorrect = question.options.find(
+            (questionOption) =>
+              questionOption.option === option.option &&
+              questionOption.isCorrect === option.isPicked
+          );
+          return { ...option, isCorrect: !!isCorrect };
+        });
+        return { ...answer, options };
+      });
+      const result = await ctx.prisma.quizResult.create({
+        data: { quizId, userId, answers: verifiedAnswers },
+      });
+      return result;
     }),
 });
