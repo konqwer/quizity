@@ -81,6 +81,20 @@ export const quizRouter = createTRPCRouter({
       });
       return post;
     }),
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
+        where: { id: input },
+        select: { authorId: true },
+      });
+      if (quiz.authorId !== ctx.session.user.id) {
+        throw new Error("You are not the author of this quiz");
+      }
+      await ctx.prisma.view.deleteMany({ where: { quizId: input } });
+      await ctx.prisma.quiz.delete({ where: { id: input } });
+      return true;
+    }),
   like: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {

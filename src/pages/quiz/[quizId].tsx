@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { type FC } from "react";
 import { FaBookmark, FaEye, FaThumbsUp } from "react-icons/fa";
+import Loading from "~/components/UI/Loading";
 import { api } from "~/utils/api";
 
 const QuestionItem: FC<{
@@ -39,14 +40,16 @@ const Quiz = () => {
   } = api.quiz.getById.useQuery(router.query.quizId as string, {
     retry: false,
   });
-  const { mutate: like } = api.quiz.like.useMutation({
+  const { mutate: like, isLoading: likeIsLoading } = api.quiz.like.useMutation({
     onSuccess: () => refetch(),
   });
-  const { mutate: save } = api.quiz.save.useMutation({
+  const { mutate: save, isLoading: saveIsLoading } = api.quiz.save.useMutation({
     onSuccess: () => refetch(),
   });
+
   if (quiz === null || isError) return router.back();
-  if (quiz === undefined) return <div />;
+  if (quiz === undefined)
+    return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
 
   return (
     <>
@@ -92,7 +95,7 @@ const Quiz = () => {
                     : "hover:text-indigo-600"
                 }`}
               >
-                <FaThumbsUp />
+                {likeIsLoading ? <Loading /> : <FaThumbsUp />}
                 <span>{quiz.likedByIDs.length}</span>
               </button>
               <button
@@ -103,7 +106,7 @@ const Quiz = () => {
                     : "hover:text-yellow-600"
                 }`}
               >
-                <FaBookmark />
+                {saveIsLoading ? <Loading /> : <FaBookmark />}
                 <span>{quiz.savedByIDs.length}</span>
               </button>
             </div>

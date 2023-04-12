@@ -74,10 +74,9 @@ const Search = () => {
     </div>
   );
 };
-
 const ProfileMenu = () => {
   const { data: sessionData } = useSession();
-
+  const router = useRouter();
   return sessionData !== undefined ? (
     sessionData === null ? (
       <button
@@ -154,7 +153,11 @@ const ProfileMenu = () => {
                       className={`${
                         active ? "bg-red-500 text-white" : "text-gray-600"
                       } flex w-full items-center gap-2 rounded-md p-2 text-sm font-bold`}
-                      onClick={() => void signOut()}
+                      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                      onClick={async () => {
+                        await router.push("/");
+                        await signOut();
+                      }}
                     >
                       <FaSignOutAlt />
                       Logout

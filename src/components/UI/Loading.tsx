@@ -6,8 +6,8 @@ const Loading: FC<{ className?: string }> = ({ className }) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       className={className}
-      width="200px"
-      height="200px"
+      width="16px"
+      height="16px"
       viewBox="0 0 100 100"
       preserveAspectRatio="xMidYMid"
     >
@@ -17,7 +17,7 @@ const Loading: FC<{ className?: string }> = ({ className }) => {
         fill="none"
         stroke="currentColor"
         strokeWidth="10"
-        r="35"
+        r="40"
         strokeDasharray="164.93361431346415 56.97787143782138"
       >
         <animateTransform
