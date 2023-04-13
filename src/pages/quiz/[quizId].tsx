@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { type FC } from "react";
 import { FaBookmark, FaEye, FaThumbsUp } from "react-icons/fa";
-import Loading from "~/components/UI/Loading";
+import LoadingScreen from "~/components/Screens/LoadingScreen";
+import Loading from "~/components/Screens/LoadingScreen";
+import Quiz404 from "~/components/Screens/Quiz404";
 import { api } from "~/utils/api";
 
 const QuestionItem: FC<{
@@ -55,9 +57,9 @@ const Quiz = () => {
   const { mutate: save, isLoading: saveIsLoading } = api.quiz.save.useMutation({
     onSuccess: () => refetch(),
   });
-  if (quiz === null || isError) return router.back();
-  if (quiz === undefined)
-    return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
+
+  if (quiz === null || isError) return <Quiz404 />;
+  if (quiz === undefined) return <LoadingScreen />;
 
   return (
     <>

@@ -4,7 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 import QuizItem from "~/components/Quizzes/QuizItem";
-import Loading from "~/components/UI/Loading";
+import LoadingScreen from "~/components/Screens/LoadingScreen";
 import { api } from "~/utils/api";
 
 const tabs = ["Created", "Saved", "Liked", "History"];
@@ -14,8 +14,7 @@ const Profile = () => {
   const { data: user, isError, refetch } = api.user.profile.useQuery();
   const [parent] = useAutoAnimate();
   if (sessionData === null || user === null || isError) return void signIn();
-  if (sessionData === undefined || user === undefined)
-    return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
+  if (sessionData === undefined || user === undefined) return <LoadingScreen />;
 
   return (
     <>

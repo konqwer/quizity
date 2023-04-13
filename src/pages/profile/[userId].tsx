@@ -2,7 +2,8 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import QuizItem from "~/components/Quizzes/QuizItem";
-import Loading from "~/components/UI/Loading";
+import LoadingScreen from "~/components/Screens/LoadingScreen";
+import User404 from "~/components/Screens/User404";
 import { api } from "~/utils/api";
 
 const User = () => {
@@ -14,10 +15,8 @@ const User = () => {
     }
   );
   console.log(user);
-  if (isError) return router.back();
-  if (user === null) return void router.replace("/profile");
-  if (user === undefined)
-    return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
+  if (isError || user === null) return <User404 />;
+  if (user === undefined) return <LoadingScreen />;
 
   return (
     <>

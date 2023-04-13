@@ -3,7 +3,8 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
 import CreateForm from "~/components/Quizzes/CreateForm";
-import Loading from "~/components/UI/Loading";
+import LoadingScreen from "~/components/Screens/LoadingScreen";
+import Quiz404 from "~/components/Screens/Quiz404";
 import { api } from "~/utils/api";
 
 const Create = () => {
@@ -18,10 +19,9 @@ const Create = () => {
   const { mutateAsync: edit } = api.quiz.edit.useMutation();
 
   if (quiz === null || isError || quiz?.author.id !== sessionData?.user.id)
-    return router.back();
+    return <Quiz404 />;
   if (sessionData === null) return void signIn();
-  if (sessionData === undefined || quiz === undefined)
-    return <Loading className="mx-auto mt-[20vh] h-16 w-16 text-gray-400" />;
+  if (sessionData === undefined || quiz === undefined) return <LoadingScreen />;
 
   return (
     <CreateForm
