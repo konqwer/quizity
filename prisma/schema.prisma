@@ -42,20 +42,20 @@ model Session {
 }
 
 model User {
-    id              String       @id @default(auto()) @map("_id") @db.ObjectId
+    id              String    @id @default(auto()) @map("_id") @db.ObjectId
     name            String
-    email           String?      @unique
+    email           String?   @unique
     emailVerified   DateTime?
     image           String
     accounts        Account[]
     sessions        Session[]
-    createdQuizzes  Quiz[]       @relation("createdQuizzes")
-    savedQuizzes    Quiz[]       @relation(name: "savedQuizzes", fields: [savedQuizzesIDs], references: [id])
-    savedQuizzesIDs String[]     @db.ObjectId
-    likedQuizzes    Quiz[]       @relation(name: "likedQuizzes", fields: [likedQuizzesIDs], references: [id])
-    likedQuizzesIDs String[]     @db.ObjectId
+    createdQuizzes  Quiz[]    @relation("createdQuizzes")
+    savedQuizzes    Quiz[]    @relation(name: "savedQuizzes", fields: [savedQuizzesIDs], references: [id])
+    savedQuizzesIDs String[]  @db.ObjectId
+    likedQuizzes    Quiz[]    @relation(name: "likedQuizzes", fields: [likedQuizzesIDs], references: [id])
+    likedQuizzesIDs String[]  @db.ObjectId
     views           View[]
-    quizResults     QuizResult[]
+    results         Result[]
 }
 
 model VerificationToken {
@@ -68,21 +68,21 @@ model VerificationToken {
 }
 
 model Quiz {
-    id          String       @id @default(auto()) @map("_id") @db.ObjectId
+    id          String     @id @default(auto()) @map("_id") @db.ObjectId
     title       String
     description String
     questions   Question[]
     comments    Comment[]
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
-    authorId    String       @db.ObjectId
-    author      User         @relation(name: "createdQuizzes", fields: [authorId], references: [id])
-    savedBy     User[]       @relation(name: "savedQuizzes", fields: [savedByIDs], references: [id])
-    savedByIDs  String[]     @db.ObjectId
-    likedBy     User[]       @relation(name: "likedQuizzes", fields: [likedByIDs], references: [id])
-    likedByIDs  String[]     @db.ObjectId
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    authorId    String     @db.ObjectId
+    author      User       @relation(name: "createdQuizzes", fields: [authorId], references: [id])
+    savedBy     User[]     @relation(name: "savedQuizzes", fields: [savedByIDs], references: [id])
+    savedByIDs  String[]   @db.ObjectId
+    likedBy     User[]     @relation(name: "likedQuizzes", fields: [likedByIDs], references: [id])
+    likedByIDs  String[]   @db.ObjectId
     views       View[]
-    quizResults QuizResult[]
+    results     Result[]
 }
 
 model View {
@@ -95,7 +95,7 @@ model View {
     createdAt DateTime           @default(now())
 }
 
-model QuizResult {
+model Result {
     id        String             @id @default(auto()) @map("_id") @db.ObjectId
     quizId    String             @db.ObjectId
     quiz      Quiz               @relation(fields: [quizId], references: [id])

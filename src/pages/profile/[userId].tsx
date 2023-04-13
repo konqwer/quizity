@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import QuizItem from "~/components/Quizzes/QuizItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
-import User404 from "~/components/Screens/User404";
+import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
 
 const User = () => {
@@ -15,7 +15,7 @@ const User = () => {
     }
   );
   console.log(user);
-  if (isError || user === null) return <User404 />;
+  if (isError || user === null) return <NotFound name={"user"} />;
   if (user === undefined) return <LoadingScreen />;
 
   return (

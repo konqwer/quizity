@@ -4,10 +4,9 @@ import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 import QuizItem from "~/components/Quizzes/QuizItem";
+import ResultItem from "~/components/Quizzes/ResultItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import { api } from "~/utils/api";
-
-const tabs = ["Created", "Saved", "Liked", "History"];
 
 const Profile = () => {
   const { data: sessionData } = useSession();
@@ -16,6 +15,7 @@ const Profile = () => {
   if (sessionData === null || user === null || isError) return void signIn();
   if (sessionData === undefined || user === undefined) return <LoadingScreen />;
 
+  console.log(user);
   return (
     <>
       <div className="mb-12 flex items-center gap-4">
@@ -30,7 +30,7 @@ const Profile = () => {
       </div>
       <Tab.Group>
         <Tab.List className="mb-8 flex justify-between">
-          {tabs.map((tab) => (
+          {["Created", "Saved", "History", "Played"].map((tab) => (
             <Tab
               key={tab}
               className={({ selected }) =>
@@ -49,7 +49,6 @@ const Profile = () => {
           {[
             user.createdQuizzes,
             user.savedQuizzes,
-            user.likedQuizzes,
             user.views.map((view) => view.quiz),
           ].map((quizzes, idx) => (
             <Tab.Panel key={idx} className="flex flex-col items-center gap-4">
@@ -66,6 +65,11 @@ const Profile = () => {
               )}
             </Tab.Panel>
           ))}
+          <Tab.Panel className="flex flex-col items-center gap-4">
+            {user.results.map((result) => (
+              <ResultItem key={result.id} result={result} />
+            ))}
+          </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
     </>

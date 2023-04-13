@@ -6,7 +6,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import { asOwnFullQuiz, asPublicFullQuiz } from "~/types/prismaValidators";
-import { zodQuiz, zodQuizResult } from "~/types/zodTypes";
+import { zodQuiz } from "~/types/zodTypes";
 
 export const quizRouter = createTRPCRouter({
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
@@ -146,35 +146,5 @@ export const quizRouter = createTRPCRouter({
         data: { savedQuizzesIDs },
       });
       return true;
-    }),
-  createResult: protectedProcedure
-    .input(zodQuizResult)
-    .mutation(async ({ ctx, input }) => {
-      const { quizId, answers } = input;
-      const userId = ctx.session.user.id;
-      const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
-        where: { id: quizId },
-        select: { questions: true },
-      });
-      // verify answers with questions we got from quiz
-      const verifiedAnswers = answers.map((answer) => {
-        const question = quiz.questions.find(
-          (question) => question.question === answer.question
-        );
-        if (!question) throw new Error("Answers were modified");
-        const options = answer.options.map((option) => {
-          const isCorrect = question.options.find(
-            (questionOption) =>
-              questionOption.option === option.option &&
-              questionOption.isCorrect === option.isPicked
-          );
-          return { ...option, isCorrect: !!isCorrect };
-        });
-        return { ...answer, options };
-      });
-      const result = await ctx.prisma.quizResult.create({
-        data: { quizId, userId, answers: verifiedAnswers },
-      });
-      return result;
     }),
 });

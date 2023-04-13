@@ -2,45 +2,14 @@ import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { type FC } from "react";
-import { FaBookmark, FaEye, FaThumbsUp } from "react-icons/fa";
+import React from "react";
+import { FaBookmark, FaEye, FaPlay, FaThumbsUp } from "react-icons/fa";
+import QuestionItem from "~/components/Quizzes/QuestionItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
-import Loading from "~/components/Screens/LoadingScreen";
-import Quiz404 from "~/components/Screens/Quiz404";
+import Loading from "~/components/UI/Loading";
+import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
 
-const QuestionItem: FC<{
-  question: {
-    question: string;
-    options: { option: string; isCorrect?: boolean }[];
-  };
-}> = ({ question }) => {
-  return (
-    <div className="divide-y divide-gray-300 rounded-md bg-gray-200 p-4">
-      <h1 className="text-xl font-bold">{question.question}</h1>
-      <div className="grid grid-rows-2 gap-2 p-2">
-        {question.options.map((option, idx) => (
-          <div key={option.option + idx.toString()}>
-            <h2>
-              <span className="mr-2 text-sm font-bold">
-                {["A", "B", "C", "D"][idx]}.
-              </span>
-              <span
-                className={`text-xl font-semibold  ${
-                  option.isCorrect
-                    ? "text-green-500 underline"
-                    : "text-gray-600"
-                }`}
-              >
-                {option.option}
-              </span>
-            </h2>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 const Quiz = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
@@ -58,9 +27,10 @@ const Quiz = () => {
     onSuccess: () => refetch(),
   });
 
-  if (quiz === null || isError) return <Quiz404 />;
+  if (quiz === null || isError) return <NotFound name={"quiz"} />;
   if (quiz === undefined) return <LoadingScreen />;
 
+  console.log(quiz);
   return (
     <>
       <div className="mb-12 flex flex-col items-start justify-between gap-12 md:flex-row">
@@ -71,33 +41,47 @@ const Quiz = () => {
           </p>
         </div>
         <div className="flex w-full flex-col gap-8 md:mt-2 md:items-end">
-          {sessionData?.user.id === quiz.author.id ? (
+          <div className="flex items-center justify-between gap-4">
+            {sessionData?.user.id === quiz.author.id ? (
+              <Link
+                href={`/quiz/edit/${quiz.id}`}
+                className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white"
+              >
+                Edit
+              </Link>
+            ) : (
+              <Link
+                href={`/user/${quiz.author.id}`}
+                className="flex items-center gap-2 transition-colors hover:text-indigo-600"
+              >
+                <span>by</span>
+                <Image
+                  width="64"
+                  height="64"
+                  src={quiz.author.image || "/default-avatar.jpg"}
+                  alt="Author avatar"
+                  className="h-10 w-10 rounded-full"
+                />
+                <span className="font-bold">{quiz.author.name}</span>
+              </Link>
+            )}
             <Link
-              href={`/quiz/edit/${quiz.id}`}
+              href={`/quiz/play/${quiz.id}`}
               className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white"
             >
-              Edit
+              Play
             </Link>
-          ) : (
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 transition-colors hover:text-indigo-600"
-            >
-              <span>by</span>
-              <Image
-                width="64"
-                height="64"
-                src={quiz.author.image || "/default-avatar.jpg"}
-                alt="Author avatar"
-                className="h-10 w-10 rounded-full"
-              />
-              <span className="font-bold">{quiz.author.name}</span>
-            </Link>
-          )}
+          </div>
           <div className="flex justify-between gap-8 font-semibold text-gray-600 md:justify-end">
-            <div className="flex items-center gap-2">
-              <FaEye />
-              <span>{quiz.views.length}</span>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <FaPlay />
+                <span>{quiz.results.length}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaEye />
+                <span>{quiz.views.length}</span>
+              </div>
             </div>
             <div className="flex gap-4">
               <button
@@ -130,9 +114,12 @@ const Quiz = () => {
         </div>
       </div>
       <h2 className="mb-8 text-2xl font-bold md:text-3xl">Questions:</h2>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="space-y-4">
         {quiz.questions.map((question, idx) => (
-          <QuestionItem key={quiz.title + idx.toString()} question={question} />
+          <QuestionItem
+            key={question.question + idx.toString()}
+            question={question}
+          />
         ))}
       </div>
     </>

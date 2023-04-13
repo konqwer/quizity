@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import CreateForm from "~/components/Quizzes/CreateForm";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
-import Quiz404 from "~/components/Screens/Quiz404";
+import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
 
 const Create = () => {
@@ -19,7 +19,7 @@ const Create = () => {
   const { mutateAsync: edit } = api.quiz.edit.useMutation();
 
   if (quiz === null || isError || quiz?.author.id !== sessionData?.user.id)
-    return <Quiz404 />;
+    return <NotFound name={"quiz"} />;
   if (sessionData === null) return void signIn();
   if (sessionData === undefined || quiz === undefined) return <LoadingScreen />;
 

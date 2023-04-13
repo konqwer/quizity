@@ -41,10 +41,7 @@ const QuizItem: FC<{
   const { data: sessionData } = useSession();
 
   return (
-    <div
-      key={quiz.id}
-      className="flex w-[min(100%,1000px)] items-center justify-between gap-4 rounded-md bg-gray-200 p-4"
-    >
+    <div className="flex w-[min(100%,1000px)] items-center justify-between gap-4 rounded-md bg-gray-200 p-4">
       <Link
         href={`/quiz/${quiz.id}`}
         className="grow text-xl font-bold hover:underline"

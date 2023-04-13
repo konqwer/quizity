@@ -30,12 +30,7 @@ export const zodQuizResult = z.object({
   answers: z.array(
     z.object({
       question: z.string(),
-      options: z.array(
-        z.object({
-          option: z.string(),
-          isPicked: z.boolean(),
-        })
-      ),
+      answer: z.string(),
     })
   ),
 });
