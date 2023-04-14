@@ -31,7 +31,6 @@ const Quiz = () => {
   if (quiz === null || isError) return <NotFound name={"quiz"} />;
   if (quiz === undefined) return <LoadingScreen />;
 
-  console.log(quiz);
   return (
     <>
       <div className="mb-12 flex flex-col items-start justify-between gap-12 md:flex-row">
@@ -45,7 +44,7 @@ const Quiz = () => {
           <div className="flex items-center justify-between gap-4">
             {sessionData?.user.id === quiz.author.id ? (
               <Link
-                href={`/quiz/edit/${quiz.id}`}
+                href={`/quiz/${quiz.id}/edit`}
                 className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white"
               >
                 Edit
@@ -67,7 +66,7 @@ const Quiz = () => {
               </Link>
             )}
             <Link
-              href={`/quiz/play/${quiz.id}`}
+              href={`/quiz/${quiz.id}/play`}
               className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white"
             >
               Play

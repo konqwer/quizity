@@ -1,7 +1,6 @@
-import { create } from "domain";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import NotFound from "~/components/Screens/NotFound";
@@ -36,6 +35,7 @@ const Play = () => {
         quizId: quiz.id,
         answers: [
           ...answers,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           { question: quiz.questions[answers.length]!.question, answer },
         ],
       }).then((res) => router.push(`/result/${res.id}`));

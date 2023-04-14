@@ -61,7 +61,7 @@ const QuizCard: FC<{
         </div>
       </div>
       <Link
-        href={`/quiz/play/${quiz.id}`}
+        href={`/quizy/${quiz.id}/play`}
         className="rounded-md bg-indigo-600 p-2 text-center font-bold text-white"
       >
         Play

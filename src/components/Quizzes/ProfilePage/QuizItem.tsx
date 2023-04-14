@@ -19,7 +19,7 @@ const OwnerTools: FC<{ onRefetch: () => void; quizId: string }> = ({
   return (
     <>
       <Link
-        href={`/quiz/edit/${quizId}`}
+        href={`/quiz/${quizId}/edit`}
         className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white hover:bg-indigo-500"
       >
         Edit
