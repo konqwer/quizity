@@ -1,4 +1,5 @@
 import { signIn, useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
@@ -53,6 +54,9 @@ const Play = () => {
 
   return (
     <>
+      <Head>
+        <title>Quizity - {quiz.title}</title>
+      </Head>
       <div className="mb-4 flex justify-between text-2xl font-bold">
         <button onClick={() => void router.back()}>
           <FaArrowLeft />

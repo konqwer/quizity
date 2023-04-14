@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import NotFound from "~/components/Screens/NotFound";
 
 const Page404 = () => {

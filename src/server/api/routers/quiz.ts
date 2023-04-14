@@ -155,12 +155,13 @@ export const quizRouter = createTRPCRouter({
     .input(
       z.object({
         query: z.string(),
-        cursor: z.string().nullish(),
+        cursor: z.number().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
       const limit = 8;
-      const { cursor, query } = input;
+      const { query } = input;
+      const cursor = input.cursor ?? 1;
       const items = await ctx.prisma.quiz.findMany({
         where: {
           OR: [
@@ -169,16 +170,16 @@ export const quizRouter = createTRPCRouter({
           ],
         },
         select: asPublicQuiz,
+        skip: (cursor - 1) * limit,
         take: limit + 1,
-        cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
           viewsCount: "desc",
         },
       });
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
-        const nextItem = items.pop(); // return the last item from the array
-        nextCursor = nextItem?.id;
+        items.pop();
+        nextCursor = cursor + 1;
       }
       return {
         items,
@@ -186,22 +187,22 @@ export const quizRouter = createTRPCRouter({
       };
     }),
   getMostPopular: publicProcedure
-    .input(z.object({ cursor: z.string().nullish() }))
+    .input(z.object({ cursor: z.number().nullish() }))
     .query(async ({ ctx, input }) => {
       const limit = 4;
-      const { cursor } = input;
+      const cursor = input.cursor ?? 1;
       const items = await ctx.prisma.quiz.findMany({
         select: asPublicQuiz,
         take: limit + 1,
-        cursor: cursor ? { id: cursor } : undefined,
+        skip: (cursor - 1) * limit,
         orderBy: {
           viewsCount: "desc",
         },
       });
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
-        const nextItem = items.pop(); // return the last item from the array
-        nextCursor = nextItem?.id;
+        items.pop(); // return the last item from the array
+        nextCursor = cursor + 1;
       }
       return {
         items,

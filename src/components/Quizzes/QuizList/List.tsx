@@ -10,7 +10,7 @@ const List: FC<{ children: ReactNode[]; className?: string }> = ({
   return (
     <div
       ref={parent}
-      className={`grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-x-6 gap-y-12 ${
+      className={`grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6 md:gap-y-12 ${
         className || ""
       }`}
     >

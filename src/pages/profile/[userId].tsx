@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
@@ -20,6 +21,9 @@ const User = () => {
 
   return (
     <>
+      <Head>
+        <title>Quizity - {user.name}</title>
+      </Head>
       <div className="mb-12 flex items-center gap-4">
         <Image
           className="h-24 w-24 rounded-full"

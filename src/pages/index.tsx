@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
+import Head from "next/head";
 
 const Hero = () => {
   return (
@@ -51,10 +52,13 @@ const Home: NextPage = () => {
 
   return (
     <div className="space-y-20">
+      <Head>
+        <title>Quizity - Home</title>
+      </Head>
       <Hero />
       {sessionData && (
         <section>
-          <h1 className="mb-8 text-2xl font-bold md:text-4xl">Your recent</h1>
+          <h1 className="mb-8 text-4xl font-bold">Your recent</h1>
           {userData ? (
             userData.views.length ? (
               <List>
@@ -73,7 +77,7 @@ const Home: NextPage = () => {
         </section>
       )}
       <section>
-        <h1 className="mb-8 text-2xl font-bold md:text-4xl">Most popular</h1>
+        <h1 className="mb-8 text-4xl font-bold">Most popular</h1>
         <List className="mb-8">
           {data.pages
             .flatMap((data) => data.items)

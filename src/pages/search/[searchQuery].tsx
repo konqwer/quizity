@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import List from "~/components/Quizzes/QuizList/List";
@@ -12,7 +13,7 @@ const Search = () => {
   const { data, fetchNextPage, hasNextPage, isFetching } =
     api.quiz.search.useInfiniteQuery(
       {
-        query: router.query.searchQuery as string, // this is optional - remember
+        query: router.query.searchQuery as string,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -23,6 +24,11 @@ const Search = () => {
 
   return (
     <>
+      <Head>
+        <title>
+          Quizity - Search for &quot;{router.query.searchQuery}&quot;
+        </title>
+      </Head>
       <h1 className="mb-12 text-2xl font-bold md:text-4xl">
         Search results for &quot;{router.query.searchQuery}&quot;
       </h1>

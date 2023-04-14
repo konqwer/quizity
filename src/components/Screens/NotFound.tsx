@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import React, { type FC } from "react";
 
@@ -5,6 +6,9 @@ const NotFound: FC<{ name: string }> = ({ name }) => {
   const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
   return (
     <div className="mx-auto mt-[20vh] space-y-8">
+      <Head>
+        <title>Not found</title>
+      </Head>
       <h1 className="text-4xl font-bold md:text-5xl">
         {capitalizedName} wasn&apos;t found
       </h1>

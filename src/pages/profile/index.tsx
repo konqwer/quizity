@@ -8,6 +8,7 @@ import List from "~/components/Quizzes/QuizList/List";
 import QuizCard from "~/components/Quizzes/QuizList/QuizCard";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import { api } from "~/utils/api";
+import Head from "next/head";
 
 const Profile = () => {
   const { data: sessionData } = useSession();
@@ -19,6 +20,9 @@ const Profile = () => {
   console.log(user);
   return (
     <>
+      <Head>
+        <title>Quizity - Profile</title>
+      </Head>
       <div className="mb-12 flex items-center gap-4">
         <Image
           className="h-24 w-24 rounded-full"
@@ -67,9 +71,15 @@ const Profile = () => {
             </Tab.Panel>
           ))}
           <Tab.Panel className="flex flex-col items-center gap-4">
-            {user.results.map((result) => (
-              <ResultItem key={result.id} result={result} />
-            ))}
+            {user.results.length ? (
+              user.results.map((result) => (
+                <ResultItem key={result.id} result={result} />
+              ))
+            ) : (
+              <h1 className="mt-16 text-center text-2xl font-bold">
+                Nothing here :(
+              </h1>
+            )}
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

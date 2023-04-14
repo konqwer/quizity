@@ -1,4 +1,5 @@
 import { signIn, useSession } from "next-auth/react";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -33,6 +34,11 @@ const Result = () => {
 
   return (
     <>
+      <Head>
+        <title>
+          Quizity - {result.user.name}`s result of {result.quiz.title}
+        </title>
+      </Head>
       <div className="mb-12 flex flex-col items-start justify-between gap-12 md:flex-row">
         <div className="w-full md:w-2/3">
           <h1 className="mb-8 text-4xl font-bold md:text-5xl">

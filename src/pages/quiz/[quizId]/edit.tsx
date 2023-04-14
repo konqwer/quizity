@@ -1,5 +1,6 @@
 import { type Question } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import CreateForm from "~/components/Quizzes/CreateForm/CreateForm";
@@ -24,17 +25,22 @@ const Create = () => {
   if (sessionData === undefined || quiz === undefined) return <LoadingScreen />;
 
   return (
-    <CreateForm
-      fillWith={{
-        title: quiz.title,
-        description: quiz.description,
-        questions: quiz.questions as Question[],
-      }}
-      onSubmit={async (data) => {
-        const res = await edit({ id: router.query.quizId as string, data });
-        void router.push(`/quiz/${res.id}`);
-      }}
-    />
+    <>
+      <Head>
+        <title>Quizity - Edit {quiz.title}</title>
+      </Head>
+      <CreateForm
+        fillWith={{
+          title: quiz.title,
+          description: quiz.description,
+          questions: quiz.questions as Question[],
+        }}
+        onSubmit={async (data) => {
+          const res = await edit({ id: router.query.quizId as string, data });
+          void router.push(`/quiz/${res.id}`);
+        }}
+      />
+    </>
   );
 };
 

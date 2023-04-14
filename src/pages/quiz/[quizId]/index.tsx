@@ -9,6 +9,7 @@ import LoadingScreen from "~/components/Screens/LoadingScreen";
 import Loading from "~/components/UI/Loading";
 import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
+import Head from "next/head";
 
 const Quiz = () => {
   const { data: sessionData } = useSession();
@@ -44,6 +45,9 @@ const Quiz = () => {
 
   return (
     <>
+      <Head>
+        <title>Quizity - {quiz.title}</title>
+      </Head>
       <div className="mb-12 flex flex-col items-start justify-between gap-12 md:flex-row">
         <div className="w-full md:w-2/3">
           <h1 className="text-4xl font-bold md:text-5xl">{quiz.title}</h1>
