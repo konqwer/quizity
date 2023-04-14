@@ -36,8 +36,12 @@ export const quizRouter = createTRPCRouter({
       },
     });
     if (!lastView) {
-      await ctx.prisma.view.create({
-        data: { quizId: input, userId: ctx.session.user.id },
+      await ctx.prisma.quiz.update({
+        where: { id: input },
+        data: {
+          views: { create: { userId: ctx.session.user.id } },
+          viewsCount: { increment: 1 },
+        },
       });
     }
     return quiz;
@@ -110,7 +114,7 @@ export const quizRouter = createTRPCRouter({
       }
       await ctx.prisma.quiz.update({
         where: { id: input },
-        data: { likedByIDs },
+        data: { likedByIDs, likesCount: likedByIDs.length },
       });
       await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
@@ -142,7 +146,7 @@ export const quizRouter = createTRPCRouter({
       }
       await ctx.prisma.quiz.update({
         where: { id: input },
-        data: { savedByIDs },
+        data: { savedByIDs, savesCount: savedByIDs.length },
       });
       await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },

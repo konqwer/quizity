@@ -40,6 +40,12 @@ export const resultRouter = createTRPCRouter({
       const result = await ctx.prisma.result.create({
         data: { quizId, userId, answers: verifiedAnswers },
       });
+      await ctx.prisma.quiz.update({
+        where: { id: quizId },
+        data: {
+          resultsCount: { increment: 1 },
+        },
+      });
       return result;
     }),
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {

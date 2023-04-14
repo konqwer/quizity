@@ -1,8 +1,5 @@
 import { Prisma } from "@prisma/client";
 
-export const asPublicView = Prisma.validator<Prisma.ViewSelect>()({
-  createdAt: true,
-});
 export const asPublicUser = Prisma.validator<Prisma.UserSelect>()({
   name: true,
   image: true,
@@ -13,21 +10,18 @@ export const asPublicQuiz = Prisma.validator<Prisma.QuizSelect>()({
   author: { select: asPublicUser },
   title: true,
 });
-export const asPublicResult = Prisma.validator<Prisma.ResultSelect>()({
-  createdAt: true,
-});
 export const asDisplayQuiz = Prisma.validator<Prisma.QuizSelect>()({
   ...asPublicQuiz,
   description: true,
   questions: {
     select: { question: true, options: { select: { option: true } } },
   },
-  views: { select: asPublicView },
-  results: { select: asPublicResult },
+  viewsCount: true,
+  resultsCount: true,
 });
 
 export const asOwnView = Prisma.validator<Prisma.ViewSelect>()({
-  ...asPublicView,
+  createdAt: true,
   quiz: {
     select: asPublicQuiz,
   },
@@ -44,10 +38,10 @@ export const asPublicFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
   ...asPublicQuiz,
   description: true,
   comments: true,
-  likedByIDs: true,
-  savedByIDs: true,
-  views: { select: asPublicView },
-  results: { select: asPublicResult },
+  likesCount: true,
+  savesCount: true,
+  viewsCount: true,
+  resultsCount: true,
   createdAt: true,
   updatedAt: true,
   questions: {
@@ -56,17 +50,8 @@ export const asPublicFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
 });
 
 export const asOwnFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
-  id: true,
-  author: { select: asPublicUser },
-  title: true,
-  description: true,
-  comments: true,
-  likedByIDs: true,
-  savedByIDs: true,
-  views: { select: asPublicView },
-  results: { select: asOwnResult },
-  createdAt: true,
-  updatedAt: true,
+  ...asPublicFullQuiz,
+  results: true,
   questions: true,
 });
 

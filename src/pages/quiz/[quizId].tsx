@@ -13,13 +13,14 @@ import { api } from "~/utils/api";
 const Quiz = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
-  const {
-    data: quiz,
-    isError,
-    refetch,
-  } = api.quiz.getById.useQuery(router.query.quizId as string, {
-    retry: false,
-  });
+  const { data: quiz, isError } = api.quiz.getById.useQuery(
+    router.query.quizId as string,
+    {
+      retry: false,
+    }
+  );
+  const { data: user, refetch } = api.user.profile.useQuery();
+
   const { mutate: like, isLoading: likeIsLoading } = api.quiz.like.useMutation({
     onSuccess: () => refetch(),
   });
@@ -76,35 +77,35 @@ const Quiz = () => {
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
                 <FaPlay />
-                <span>{quiz.results.length}</span>
+                <span>{quiz.resultsCount}</span>
               </div>
               <div className="flex items-center gap-2">
                 <FaEye />
-                <span>{quiz.views.length}</span>
+                <span>{quiz.viewsCount}</span>
               </div>
             </div>
             <div className="flex gap-4">
               <button
                 onClick={() => (sessionData ? like(quiz.id) : void signIn())}
                 className={`flex items-center gap-2 hover:text-indigo-600 ${
-                  quiz.likedByIDs.includes(sessionData?.user.id || "")
+                  user?.likedQuizzes.map((quiz) => quiz.id).includes(quiz.id)
                     ? "text-indigo-600 hover:text-red-600"
                     : "hover:text-indigo-600"
                 }`}
               >
                 {likeIsLoading ? <Loading /> : <FaThumbsUp />}
-                <span>{quiz.likedByIDs.length}</span>
+                <span>{quiz.likesCount}</span>
               </button>
               <button
                 onClick={() => (sessionData ? save(quiz.id) : void signIn())}
                 className={`flex items-center gap-2 hover:text-indigo-600 ${
-                  quiz.savedByIDs.includes(sessionData?.user.id || "")
+                  user?.savedQuizzes.map((quiz) => quiz.id).includes(quiz.id)
                     ? "text-yellow-600 hover:text-red-600"
                     : "hover:text-yellow-600"
                 }`}
               >
                 {saveIsLoading ? <Loading /> : <FaBookmark />}
-                <span>{quiz.savedByIDs.length}</span>
+                <span>{quiz.savesCount}</span>
               </button>
             </div>
           </div>

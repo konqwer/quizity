@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { type FC, useState } from "react";
@@ -9,6 +10,8 @@ const QuizCard: FC<{
   quiz: Prisma.QuizGetPayload<{ select: typeof asDisplayQuiz }>;
 }> = ({ quiz }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { data: sessionData } = useSession();
+  const isOwner = sessionData?.user.id === quiz.author?.id;
   return (
     <div className="flex flex-col gap-4 rounded-md bg-gray-200 p-4 hover:bg-gray-300">
       <Link
@@ -31,7 +34,7 @@ const QuizCard: FC<{
       </Link>
       <div className="flex justify-between gap-2">
         <Link
-          href={`/profile/${quiz.author.id}`}
+          href={`/profile/${isOwner ? "" : quiz.author.id}`}
           className="flex items-center gap-2 transition-colors hover:text-indigo-600"
         >
           <span>by</span>
@@ -42,16 +45,18 @@ const QuizCard: FC<{
             alt="Author avatar"
             className="h-10 w-10 rounded-full"
           />
-          <span className="font-bold">{quiz.author?.name}</span>
+          <span className={`font-bold ${isOwner ? "text-indigo-600" : ""}`}>
+            {isOwner ? "You" : quiz.author?.name}
+          </span>
         </Link>
         <div className="flex gap-4 font-semibold text-gray-600">
           <div className="flex items-center gap-2">
             <FaPlay />
-            <span>{quiz.results.length}</span>
+            <span>{quiz.resultsCount}</span>
           </div>
           <div className="flex items-center gap-2">
             <FaEye />
-            <span>{quiz.views.length}</span>
+            <span>{quiz.viewsCount}</span>
           </div>
         </div>
       </div>
