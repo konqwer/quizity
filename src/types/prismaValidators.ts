@@ -51,7 +51,7 @@ export const asPublicFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
 
 export const asOwnFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
   ...asPublicFullQuiz,
-  results: true,
+  results: { orderBy: { createdAt: "desc" }, select: asOwnResult },
   questions: true,
 });
 

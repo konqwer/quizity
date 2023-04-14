@@ -87,6 +87,7 @@ export const quizRouter = createTRPCRouter({
         throw new Error("You are not the author of this quiz");
       }
       await ctx.prisma.view.deleteMany({ where: { quizId: input } });
+      await ctx.prisma.result.deleteMany({ where: { quizId: input } });
       await ctx.prisma.quiz.delete({ where: { id: input } });
       return true;
     }),

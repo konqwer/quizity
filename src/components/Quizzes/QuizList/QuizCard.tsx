@@ -45,7 +45,7 @@ const QuizCard: FC<{
             alt="Author avatar"
             className="h-10 w-10 rounded-full"
           />
-          <span className={`font-bold ${isOwner ? "text-indigo-600" : ""}`}>
+          <span className="font-bold">
             {isOwner ? "You" : quiz.author?.name}
           </span>
         </Link>

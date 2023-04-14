@@ -27,9 +27,13 @@ const Quiz = () => {
   const { mutate: save, isLoading: saveIsLoading } = api.quiz.save.useMutation({
     onSuccess: () => refetch(),
   });
+  const { mutate: deletee, isLoading: deleteIsLoading } =
+    api.quiz.delete.useMutation({
+      onSuccess: () => router.push("/profile"),
+    });
 
   if (quiz === null || isError) return <NotFound name={"quiz"} />;
-  if (quiz === undefined) return <LoadingScreen />;
+  if (quiz === undefined || deleteIsLoading) return <LoadingScreen />;
 
   return (
     <>
@@ -43,12 +47,26 @@ const Quiz = () => {
         <div className="flex w-full flex-col gap-8 md:mt-2 md:items-end">
           <div className="flex items-center justify-between gap-4">
             {sessionData?.user.id === quiz.author.id ? (
-              <Link
-                href={`/quiz/${quiz.id}/edit`}
-                className="flex h-10 items-center justify-center rounded-full bg-indigo-600 px-6 text-sm font-bold text-white"
-              >
-                Edit
-              </Link>
+              <div className="flex h-10 divide-x divide-gray-300 overflow-hidden rounded-full bg-gray-200 text-sm font-bold text-gray-600">
+                <Link
+                  href={`/quiz/${quiz.id}/results`}
+                  className="flex items-center px-4 hover:bg-indigo-600 hover:text-white"
+                >
+                  Results
+                </Link>
+                <Link
+                  href={`/quiz/${quiz.id}/edit`}
+                  className="flex items-center px-4 hover:bg-indigo-600 hover:text-white"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => deletee(quiz.id)}
+                  className="px-4 hover:bg-red-600 hover:text-white"
+                >
+                  Delete
+                </button>
+              </div>
             ) : (
               <Link
                 href={`/user/${quiz.author.id}`}
