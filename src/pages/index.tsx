@@ -37,7 +37,7 @@ const Hero = () => {
 };
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
-  const { data: userData } = api.user.profile.useQuery(undefined, {
+  const { data: userData } = api.user.me.useQuery(undefined, {
     enabled: !!sessionData,
   });
   const { data, hasNextPage, fetchNextPage, isFetching } =
