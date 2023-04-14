@@ -12,7 +12,8 @@ import Head from "next/head";
 
 const Profile = () => {
   const { data: sessionData } = useSession();
-  const { data: user, isError } = api.user.profile.useQuery();
+  const { data: user, isError } = api.user.me.useQuery();
+
   const [parent] = useAutoAnimate();
   if (sessionData === null || user === null || isError) return void signIn();
   if (sessionData === undefined || user === undefined) return <LoadingScreen />;
@@ -31,7 +32,12 @@ const Profile = () => {
           alt="avatar"
           src={user?.image || "/default-avatar.jpg"}
         />
-        <h1 className="text-4xl font-bold md:text-5xl">{user.name}</h1>
+        <div>
+          <h1 className="mb-1 text-4xl font-bold md:text-5xl">{user.name}</h1>
+          <h2 className="font-semibold text-gray-600">
+            {user.createdAt.toDateString()}
+          </h2>
+        </div>
       </div>
       <Tab.Group>
         <Tab.List className="mb-8 flex justify-between">

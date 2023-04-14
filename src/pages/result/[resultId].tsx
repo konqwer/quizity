@@ -71,11 +71,9 @@ const Result = () => {
         </div>
         <div className="flex w-full flex-col gap-8 md:mt-2 md:items-end">
           <Link
-            href={
-              sessionData.user.id === result.user.id
-                ? "/profile"
-                : `/user/${result.user.id}`
-            }
+            href={`/profile/${
+              sessionData.user.id === result.user.id ? "" : result.user.id
+            }`}
             className="flex items-center gap-2 transition-colors hover:text-indigo-600"
           >
             <span>by</span>

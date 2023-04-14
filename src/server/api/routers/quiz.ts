@@ -165,8 +165,8 @@ export const quizRouter = createTRPCRouter({
       const items = await ctx.prisma.quiz.findMany({
         where: {
           OR: [
-            { title: { contains: query } },
-            { description: { contains: query } },
+            { title: { contains: query, mode: "insensitive" } },
+            { description: { contains: query, mode: "insensitive" } },
           ],
         },
         select: asPublicQuiz,

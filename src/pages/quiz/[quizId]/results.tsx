@@ -41,9 +41,21 @@ const Results = () => {
           quiz as unknown as {
             results: Prisma.ResultGetPayload<{ select: typeof asOwnResult }>[];
           }
-        ).results.map((result) => (
-          <ResultItem key={result.id} showUser={true} result={result} />
-        ))}
+        ).results.length ? (
+          (
+            quiz as unknown as {
+              results: Prisma.ResultGetPayload<{
+                select: typeof asOwnResult;
+              }>[];
+            }
+          ).results.map((result) => (
+            <ResultItem key={result.id} showUser={true} result={result} />
+          ))
+        ) : (
+          <h1 className="mt-16 text-center text-2xl font-bold">
+            No results :(
+          </h1>
+        )}
       </div>
     </>
   );

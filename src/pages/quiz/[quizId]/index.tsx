@@ -21,7 +21,7 @@ const Quiz = () => {
   } = api.quiz.getById.useQuery(router.query.quizId as string, {
     retry: false,
   });
-  const { data: user, refetch: refetchUser } = api.user.profile.useQuery();
+  const { data: user, refetch: refetchUser } = api.user.me.useQuery();
 
   const { mutate: like, isLoading: likeIsLoading } = api.quiz.like.useMutation({
     onSuccess: () => {
@@ -80,7 +80,7 @@ const Quiz = () => {
               </div>
             ) : (
               <Link
-                href={`/user/${quiz.author.id}`}
+                href={`/profile/${quiz.author.id}`}
                 className="flex items-center gap-2 transition-colors hover:text-indigo-600"
               >
                 <span>by</span>

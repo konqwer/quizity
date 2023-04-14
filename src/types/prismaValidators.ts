@@ -42,12 +42,16 @@ export const asOwnQuiz = Prisma.validator<Prisma.QuizSelect>()({
   questions: true,
 });
 
-export const asOwnFullUser = Prisma.validator<Prisma.UserSelect>()({
+export const asPublicFullUser = Prisma.validator<Prisma.UserSelect>()({
   ...asPublicUser,
+  createdAt: true,
   createdQuizzes: {
     orderBy: { updatedAt: "desc" },
     select: asPublicQuiz,
   },
+});
+export const asOwnFullUser = Prisma.validator<Prisma.UserSelect>()({
+  ...asPublicFullUser,
   likedQuizzes: {
     select: asPublicQuiz,
   },
@@ -62,13 +66,5 @@ export const asOwnFullUser = Prisma.validator<Prisma.UserSelect>()({
   results: {
     orderBy: { createdAt: "desc" },
     select: asOwnResult,
-  },
-});
-
-export const asPublicFullUser = Prisma.validator<Prisma.UserSelect>()({
-  ...asPublicUser,
-  createdQuizzes: {
-    orderBy: { updatedAt: "desc" },
-    select: asPublicQuiz,
   },
 });
