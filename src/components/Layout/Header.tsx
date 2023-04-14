@@ -14,16 +14,17 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import Loading from "~/components/UI/Loading";
 
-const SearchInput: FC<{ onBlur?: () => void; autoFocus?: boolean }> = ({
-  onBlur,
-  autoFocus,
-}) => {
+const SearchInput: FC<{
+  onBlur?: () => void;
+  autoFocus?: boolean;
+  onSubmit?: () => void;
+}> = ({ onBlur, autoFocus, onSubmit }) => {
   const [focus, setFocus] = useState(false);
   const router = useRouter();
   const submitHandler: React.FormEventHandler = (e) => {
     e.preventDefault();
+    onSubmit && onSubmit();
     const form = e.target as HTMLFormElement & { input: HTMLInputElement };
-    console.log(form.input.value);
     if (form.input.value !== "") {
       void router.push(`/search/${form.input.value}`);
       form.input.value = "";
@@ -74,7 +75,11 @@ const MobileSearch = () => {
           {({ close }) => (
             <>
               <FaArrowLeft className="fill-gray-600" onClick={() => close()} />
-              <SearchInput onBlur={() => close()} autoFocus={true} />
+              <SearchInput
+                onBlur={() => close()}
+                onSubmit={() => close()}
+                autoFocus={true}
+              />
             </>
           )}
         </Popover.Panel>
