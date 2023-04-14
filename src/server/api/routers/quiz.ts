@@ -4,11 +4,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import {
-  asDisplayQuiz,
-  asOwnFullQuiz,
-  asPublicFullQuiz,
-} from "~/types/prismaValidators";
+import { asPublicQuiz, asOwnQuiz } from "~/types/prismaValidators";
 import { zodQuiz } from "~/types/zodTypes";
 
 export const quizRouter = createTRPCRouter({
@@ -23,7 +19,7 @@ export const quizRouter = createTRPCRouter({
     }
     const quiz = await ctx.prisma.quiz.findUniqueOrThrow({
       where: { id: input },
-      select: isOwner ? asOwnFullQuiz : asPublicFullQuiz,
+      select: isOwner ? asOwnQuiz : asPublicQuiz,
     });
     if (!quiz) return null;
     if (!ctx.session) return quiz;
@@ -172,11 +168,34 @@ export const quizRouter = createTRPCRouter({
             { description: { contains: query } },
           ],
         },
-        select: asDisplayQuiz,
+        select: asPublicQuiz,
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
-          id: "asc",
+          viewsCount: "desc",
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (items.length > limit) {
+        const nextItem = items.pop(); // return the last item from the array
+        nextCursor = nextItem?.id;
+      }
+      return {
+        items,
+        nextCursor,
+      };
+    }),
+  getMostPopular: publicProcedure
+    .input(z.object({ cursor: z.string().nullish() }))
+    .query(async ({ ctx, input }) => {
+      const limit = 4;
+      const { cursor } = input;
+      const items = await ctx.prisma.quiz.findMany({
+        select: asPublicQuiz,
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          viewsCount: "desc",
         },
       });
       let nextCursor: typeof cursor | undefined = undefined;

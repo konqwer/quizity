@@ -1,4 +1,12 @@
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
+import List from "~/components/Quizzes/QuizList/List";
+import QuizCard from "~/components/Quizzes/QuizList/QuizCard";
+import Loading from "~/components/UI/Loading";
+import { api } from "~/utils/api";
+import LoadingScreen from "~/components/Screens/LoadingScreen";
+import Link from "next/link";
+import { FaGithub } from "react-icons/fa";
 
 const Hero = () => {
   return (
@@ -9,21 +17,78 @@ const Hero = () => {
         </span>{" "}
         - platform for users to create, join, and learn from quizzes
       </div>
-      <button className="flex items-center justify-center rounded-md bg-green-500 p-8 transition-transform hover:scale-105">
-        Create your first quiz
-      </button>
-      <button className="flex items-center justify-center rounded-md bg-fuchsia-500 p-8 transition-transform hover:-skew-x-1 hover:-skew-y-1">
-        Join game
-      </button>
+      <Link
+        href="/quiz/create"
+        className="flex items-center justify-center gap-4 rounded-md bg-green-500 p-8 transition-transform hover:scale-105"
+      >
+        Create quiz
+      </Link>
+      <a
+        target="_blank"
+        href="https://github.com/konqwer/quizity"
+        className="flex items-center justify-center gap-4 rounded-md bg-fuchsia-500 p-8 transition-transform hover:-skew-x-1 hover:-skew-y-1"
+      >
+        Github page
+        <FaGithub />
+      </a>
     </div>
   );
 };
 const Home: NextPage = () => {
+  const { data: sessionData } = useSession();
+  const { data: userData } = api.user.profile.useQuery(undefined, {
+    enabled: !!sessionData,
+  });
+  const { data, hasNextPage, fetchNextPage, isFetching } =
+    api.quiz.getMostPopular.useInfiniteQuery(
+      {},
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+      }
+    );
+
+  if (data === undefined) return <LoadingScreen />;
+
   return (
     <div className="space-y-20">
       <Hero />
+      {sessionData && (
+        <section>
+          <h1 className="mb-8 text-2xl font-bold md:text-4xl">Your recent</h1>
+          {userData ? (
+            userData.views.length ? (
+              <List>
+                {userData.views.slice(0, 4).map((view) => (
+                  <QuizCard key={view.quiz.id} quiz={view.quiz} />
+                ))}
+              </List>
+            ) : (
+              <h1 className="mt-8 text-center text-xl">
+                No quizzes available :(
+              </h1>
+            )
+          ) : (
+            <Loading className="mx-auto h-8 w-8" />
+          )}
+        </section>
+      )}
       <section>
-        <h1 className="text-2xl font-bold md:text-4xl">Today most popular</h1>
+        <h1 className="mb-8 text-2xl font-bold md:text-4xl">Most popular</h1>
+        <List className="mb-8">
+          {data.pages
+            .flatMap((data) => data.items)
+            .map((quiz) => (
+              <QuizCard key={quiz.id} quiz={quiz} />
+            ))}
+        </List>
+        {hasNextPage && (
+          <button
+            className="mx-auto block p-4 font-semibold hover:underline"
+            onClick={() => void fetchNextPage()}
+          >
+            {isFetching ? <Loading /> : "View more"}
+          </button>
+        )}
       </section>
     </div>
   );

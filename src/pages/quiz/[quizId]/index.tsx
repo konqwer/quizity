@@ -13,19 +13,26 @@ import { api } from "~/utils/api";
 const Quiz = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
-  const { data: quiz, isError } = api.quiz.getById.useQuery(
-    router.query.quizId as string,
-    {
-      retry: false,
-    }
-  );
-  const { data: user, refetch } = api.user.profile.useQuery();
+  const {
+    data: quiz,
+    isError,
+    refetch: refetchQuiz,
+  } = api.quiz.getById.useQuery(router.query.quizId as string, {
+    retry: false,
+  });
+  const { data: user, refetch: refetchUser } = api.user.profile.useQuery();
 
   const { mutate: like, isLoading: likeIsLoading } = api.quiz.like.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      void refetchQuiz();
+      void refetchUser();
+    },
   });
   const { mutate: save, isLoading: saveIsLoading } = api.quiz.save.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      void refetchQuiz();
+      void refetchUser();
+    },
   });
   const { mutate: deletee, isLoading: deleteIsLoading } =
     api.quiz.delete.useMutation({
@@ -103,7 +110,9 @@ const Quiz = () => {
             </div>
             <div className="flex gap-4">
               <button
-                onClick={() => (sessionData ? like(quiz.id) : void signIn())}
+                onClick={() =>
+                  sessionData ? likeIsLoading || like(quiz.id) : void signIn()
+                }
                 className={`flex items-center gap-2 hover:text-indigo-600 ${
                   user?.likedQuizzes.map((quiz) => quiz.id).includes(quiz.id)
                     ? "text-indigo-600 hover:text-red-600"
@@ -114,7 +123,9 @@ const Quiz = () => {
                 <span>{quiz.likesCount}</span>
               </button>
               <button
-                onClick={() => (sessionData ? save(quiz.id) : void signIn())}
+                onClick={() =>
+                  sessionData ? saveIsLoading || save(quiz.id) : void signIn()
+                }
                 className={`flex items-center gap-2 hover:text-indigo-600 ${
                   user?.savedQuizzes.map((quiz) => quiz.id).includes(quiz.id)
                     ? "text-yellow-600 hover:text-red-600"

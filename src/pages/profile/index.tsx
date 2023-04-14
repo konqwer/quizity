@@ -3,14 +3,15 @@ import { Tab } from "@headlessui/react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
-import QuizItem from "~/components/Quizzes/ProfilePage/QuizItem";
-import ResultItem from "~/components/Quizzes/ProfilePage/ResultItem";
+import ResultItem from "~/components/Quizzes/QuizPage/ResultItem";
+import List from "~/components/Quizzes/QuizList/List";
+import QuizCard from "~/components/Quizzes/QuizList/QuizCard";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import { api } from "~/utils/api";
 
 const Profile = () => {
   const { data: sessionData } = useSession();
-  const { data: user, isError, refetch } = api.user.profile.useQuery();
+  const { data: user, isError } = api.user.profile.useQuery();
   const [parent] = useAutoAnimate();
   if (sessionData === null || user === null || isError) return void signIn();
   if (sessionData === undefined || user === undefined) return <LoadingScreen />;
@@ -51,17 +52,17 @@ const Profile = () => {
             user.savedQuizzes,
             user.views.map((view) => view.quiz),
           ].map((quizzes, idx) => (
-            <Tab.Panel key={idx} className="flex flex-col items-center gap-4">
+            <Tab.Panel key={idx}>
               {quizzes.length ? (
-                quizzes.map((quiz) => (
-                  <QuizItem
-                    quiz={quiz}
-                    key={quiz.id}
-                    onRefetch={() => void refetch()}
-                  />
-                ))
+                <List>
+                  {quizzes.map((quiz) => (
+                    <QuizCard quiz={quiz} key={quiz.id} />
+                  ))}
+                </List>
               ) : (
-                <div className="mt-8 text-2xl font-bold">Nothing here :(</div>
+                <h1 className="mt-16 text-center text-2xl font-bold">
+                  Nothing here :(
+                </h1>
               )}
             </Tab.Panel>
           ))}

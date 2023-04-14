@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
-import QuizItem from "~/components/Quizzes/ProfilePage/QuizItem";
+import List from "~/components/Quizzes/QuizList/List";
+import QuizCard from "~/components/Quizzes/QuizList/QuizCard";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
@@ -14,7 +15,6 @@ const User = () => {
       retry: false,
     }
   );
-  console.log(user);
   if (isError || user === null) return <NotFound name={"user"} />;
   if (user === undefined) return <LoadingScreen />;
 
@@ -30,15 +30,17 @@ const User = () => {
         />
         <h1 className="text-4xl font-bold md:text-5xl">{user.name}</h1>
       </div>
-      <div className="flex flex-col items-center gap-4">
-        {user.createdQuizzes.length ? (
-          user.createdQuizzes.map((quiz) => (
-            <QuizItem quiz={quiz} key={quiz.id} />
-          ))
-        ) : (
-          <div className="mt-8 text-2xl font-bold">No quizzes created :(</div>
-        )}
-      </div>
+      {user.createdQuizzes.length ? (
+        <List>
+          {user.createdQuizzes.map((quiz) => (
+            <QuizCard quiz={quiz} key={quiz.id} />
+          ))}
+        </List>
+      ) : (
+        <h1 className="mt-16 text-center text-2xl font-bold">
+          Nothing here :(
+        </h1>
+      )}
     </>
   );
 };

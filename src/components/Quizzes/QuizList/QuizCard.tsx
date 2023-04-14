@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { type FC, useState } from "react";
 import { FaEye, FaPlay } from "react-icons/fa";
-import type { asDisplayQuiz } from "~/types/prismaValidators";
+import type { asPublicQuiz } from "~/types/prismaValidators";
 
 const QuizCard: FC<{
-  quiz: Prisma.QuizGetPayload<{ select: typeof asDisplayQuiz }>;
+  quiz: Prisma.QuizGetPayload<{ select: typeof asPublicQuiz }>;
 }> = ({ quiz }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { data: sessionData } = useSession();
@@ -60,12 +60,6 @@ const QuizCard: FC<{
           </div>
         </div>
       </div>
-      <Link
-        href={`/quizy/${quiz.id}/play`}
-        className="rounded-md bg-indigo-600 p-2 text-center font-bold text-white"
-      >
-        Play
-      </Link>
     </div>
   );
 };

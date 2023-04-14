@@ -5,19 +5,21 @@ export const asPublicUser = Prisma.validator<Prisma.UserSelect>()({
   image: true,
   id: true,
 });
+
 export const asPublicQuiz = Prisma.validator<Prisma.QuizSelect>()({
   id: true,
   author: { select: asPublicUser },
   title: true,
-});
-export const asDisplayQuiz = Prisma.validator<Prisma.QuizSelect>()({
-  ...asPublicQuiz,
   description: true,
+  likesCount: true,
+  savesCount: true,
+  viewsCount: true,
+  resultsCount: true,
+  createdAt: true,
+  updatedAt: true,
   questions: {
     select: { question: true, options: { select: { option: true } } },
   },
-  viewsCount: true,
-  resultsCount: true,
 });
 
 export const asOwnView = Prisma.validator<Prisma.ViewSelect>()({
@@ -34,23 +36,8 @@ export const asOwnResult = Prisma.validator<Prisma.ResultSelect>()({
   quiz: { select: asPublicQuiz },
 });
 
-export const asPublicFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
+export const asOwnQuiz = Prisma.validator<Prisma.QuizSelect>()({
   ...asPublicQuiz,
-  description: true,
-  comments: true,
-  likesCount: true,
-  savesCount: true,
-  viewsCount: true,
-  resultsCount: true,
-  createdAt: true,
-  updatedAt: true,
-  questions: {
-    select: { question: true, options: { select: { option: true } } },
-  },
-});
-
-export const asOwnFullQuiz = Prisma.validator<Prisma.QuizSelect>()({
-  ...asPublicFullQuiz,
   results: { orderBy: { createdAt: "desc" }, select: asOwnResult },
   questions: true,
 });
