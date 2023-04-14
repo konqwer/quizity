@@ -1,4 +1,4 @@
-# Create T3 App
+# Quizity
 
 ## Description 
 Quizity is platform for users to create, join, and learn from quizzes
