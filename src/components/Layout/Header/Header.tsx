@@ -1,8 +1,9 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, type FC } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import {
+  FaArrowLeft,
   FaBook,
   FaPlus,
   FaSearch,
@@ -13,15 +14,19 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import Loading from "~/components/UI/Loading";
 
-const SearchInput = () => {
+const SearchInput: FC<{ onBlur?: () => void; autoFocus?: boolean }> = ({
+  onBlur,
+  autoFocus,
+}) => {
   const [focus, setFocus] = useState(false);
   const router = useRouter();
   const submitHandler: React.FormEventHandler = (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement & { input: HTMLInputElement };
+    console.log(form.input.value);
     if (form.input.value !== "") {
+      void router.push(`/search/${form.input.value}`);
       form.input.value = "";
-      void router.replace(`/search/${form.input.value}`);
     }
   };
   return (
@@ -38,11 +43,16 @@ const SearchInput = () => {
           }`}
         />
         <input
-          onBlur={() => setFocus(false)}
+          id="input"
+          onBlur={() => {
+            setFocus(false);
+            onBlur && onBlur();
+          }}
           onFocus={() => setFocus(true)}
           className="w-full bg-transparent placeholder:text-gray-400 focus:outline-none"
           placeholder="Quizzes, courses, etc."
-          autoFocus
+          autoFocus={autoFocus || false}
+          autoComplete="off"
         />
       </form>
     </>
@@ -60,8 +70,13 @@ const MobileSearch = () => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel className="absolute inset-x-0 top-0 z-20 flex h-16 items-center bg-gray-100 p-4">
-          <SearchInput />
+        <Popover.Panel className="absolute inset-x-0 top-0 z-20 flex h-16 items-center gap-4 bg-gray-100 p-4">
+          {({ close }) => (
+            <>
+              <FaArrowLeft className="fill-gray-600" onClick={() => close()} />
+              <SearchInput onBlur={() => close()} autoFocus={true} />
+            </>
+          )}
         </Popover.Panel>
       </Transition>
     </Popover>
@@ -128,7 +143,6 @@ const ProfileMenu = () => {
               <div className="p-1">
                 {[
                   { name: "Profile", href: "/profile", icon: FaUserAlt },
-                  { name: "Library", href: "/library", icon: FaBook },
                   { name: "Create quiz", href: "/quiz/create", icon: FaPlus },
                 ].map((item) => (
                   <Menu.Item key={item.name}>
@@ -194,7 +208,6 @@ const Header = () => {
         <div className="flex h-full w-1/2 grow items-center gap-8">
           {[
             { name: "Home", href: "/" },
-            { name: "Library", href: "/library" },
             { name: "Create quiz", href: "/quiz/create" },
           ].map((item) => (
             <Link

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
-import QuizItem from "~/components/Quizzes/QuizItem";
+import QuizItem from "~/components/Quizzes/ProfilePage/QuizItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";

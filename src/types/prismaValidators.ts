@@ -1,5 +1,8 @@
 import { Prisma } from "@prisma/client";
 
+export const asPublicView = Prisma.validator<Prisma.ViewSelect>()({
+  createdAt: true,
+});
 export const asPublicUser = Prisma.validator<Prisma.UserSelect>()({
   name: true,
   image: true,
@@ -10,17 +13,24 @@ export const asPublicQuiz = Prisma.validator<Prisma.QuizSelect>()({
   author: { select: asPublicUser },
   title: true,
 });
-export const asPublicView = Prisma.validator<Prisma.ViewSelect>()({
+export const asPublicResult = Prisma.validator<Prisma.ResultSelect>()({
   createdAt: true,
 });
+export const asDisplayQuiz = Prisma.validator<Prisma.QuizSelect>()({
+  ...asPublicQuiz,
+  description: true,
+  questions: {
+    select: { question: true, options: { select: { option: true } } },
+  },
+  views: { select: asPublicView },
+  results: { select: asPublicResult },
+});
+
 export const asOwnView = Prisma.validator<Prisma.ViewSelect>()({
   ...asPublicView,
   quiz: {
     select: asPublicQuiz,
   },
-});
-export const asPublicResult = Prisma.validator<Prisma.ResultSelect>()({
-  createdAt: true,
 });
 export const asOwnResult = Prisma.validator<Prisma.ResultSelect>()({
   id: true,

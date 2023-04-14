@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const zodQuiz = z.object({
-  title: z.string().min(5, "Title must contain at least 5 characters"),
+  title: z.string().min(1, "Title is requirred"),
   description: z
     .string()
     .max(500, "Description must be less than 500 characters"),

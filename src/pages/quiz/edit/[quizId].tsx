@@ -2,7 +2,7 @@ import { type Question } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
-import CreateForm from "~/components/Quizzes/CreateForm";
+import CreateForm from "~/components/Quizzes/CreateForm/CreateForm";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";

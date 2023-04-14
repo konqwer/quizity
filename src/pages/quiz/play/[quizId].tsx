@@ -2,6 +2,7 @@ import { create } from "domain";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
@@ -53,6 +54,9 @@ const Play = () => {
   return (
     <>
       <div className="mb-4 flex justify-between text-2xl font-bold">
+        <button onClick={() => void router.back()}>
+          <FaArrowLeft />
+        </button>
         <h1>{quiz.title}</h1>
         <h1>
           {answers.length + 1}/{quiz.questions.length}

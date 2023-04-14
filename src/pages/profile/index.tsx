@@ -3,8 +3,8 @@ import { Tab } from "@headlessui/react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
-import QuizItem from "~/components/Quizzes/QuizItem";
-import ResultItem from "~/components/Quizzes/ResultItem";
+import QuizItem from "~/components/Quizzes/ProfilePage/QuizItem";
+import ResultItem from "~/components/Quizzes/ProfilePage/ResultItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import { api } from "~/utils/api";
 

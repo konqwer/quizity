@@ -1,11 +1,14 @@
 import { z } from "zod";
-
 import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { asOwnFullQuiz, asPublicFullQuiz } from "~/types/prismaValidators";
+import {
+  asDisplayQuiz,
+  asOwnFullQuiz,
+  asPublicFullQuiz,
+} from "~/types/prismaValidators";
 import { zodQuiz } from "~/types/zodTypes";
 
 export const quizRouter = createTRPCRouter({
@@ -146,5 +149,39 @@ export const quizRouter = createTRPCRouter({
         data: { savedQuizzesIDs },
       });
       return true;
+    }),
+  search: publicProcedure
+    .input(
+      z.object({
+        query: z.string(),
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = 8;
+      const { cursor, query } = input;
+      const items = await ctx.prisma.quiz.findMany({
+        where: {
+          OR: [
+            { title: { contains: query } },
+            { description: { contains: query } },
+          ],
+        },
+        select: asDisplayQuiz,
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          id: "asc",
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (items.length > limit) {
+        const nextItem = items.pop(); // return the last item from the array
+        nextCursor = nextItem?.id;
+      }
+      return {
+        items,
+        nextCursor,
+      };
     }),
 });

@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { type FC } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import { api } from "~/utils/api";
-import Loading from "../UI/Loading";
+import Loading from "../../UI/Loading";
 import { type asPublicQuiz } from "~/types/prismaValidators";
 
 const OwnerTools: FC<{ onRefetch: () => void; quizId: string }> = ({

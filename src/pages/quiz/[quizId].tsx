@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { FaBookmark, FaEye, FaPlay, FaThumbsUp } from "react-icons/fa";
-import QuestionItem from "~/components/Quizzes/QuestionItem";
+import QuestionItem from "~/components/Quizzes/QuizPage/QuestionItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import Loading from "~/components/UI/Loading";
 import NotFound from "~/components/Screens/NotFound";

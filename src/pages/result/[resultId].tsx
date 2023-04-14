@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
-import QuestionItem from "~/components/Quizzes/QuestionItem";
+import QuestionItem from "~/components/Quizzes/QuizPage/QuestionItem";
 import LoadingScreen from "~/components/Screens/LoadingScreen";
 import NotFound from "~/components/Screens/NotFound";
 import { api } from "~/utils/api";
