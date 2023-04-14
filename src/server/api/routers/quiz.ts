@@ -172,9 +172,12 @@ export const quizRouter = createTRPCRouter({
         select: asPublicQuiz,
         skip: (cursor - 1) * limit,
         take: limit + 1,
-        orderBy: {
-          viewsCount: "desc",
-        },
+        orderBy: [
+          { id: "desc" },
+          {
+            viewsCount: "desc",
+          },
+        ],
       });
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
@@ -195,13 +198,16 @@ export const quizRouter = createTRPCRouter({
         select: asPublicQuiz,
         take: limit + 1,
         skip: (cursor - 1) * limit,
-        orderBy: {
-          viewsCount: "desc",
-        },
+        orderBy: [
+          { id: "desc" },
+          {
+            viewsCount: "desc",
+          },
+        ],
       });
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
-        items.pop(); // return the last item from the array
+        items.pop();
         nextCursor = cursor + 1;
       }
       return {
