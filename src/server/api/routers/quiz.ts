@@ -173,10 +173,10 @@ export const quizRouter = createTRPCRouter({
         skip: (cursor - 1) * limit,
         take: limit + 1,
         orderBy: [
-          { id: "desc" },
           {
             viewsCount: "desc",
           },
+          { id: "desc" },
         ],
       });
       let nextCursor: typeof cursor | undefined = undefined;
@@ -199,10 +199,10 @@ export const quizRouter = createTRPCRouter({
         take: limit + 1,
         skip: (cursor - 1) * limit,
         orderBy: [
-          { id: "desc" },
           {
             viewsCount: "desc",
           },
+          { id: "desc" },
         ],
       });
       let nextCursor: typeof cursor | undefined = undefined;
