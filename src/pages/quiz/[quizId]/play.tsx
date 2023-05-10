@@ -39,7 +39,7 @@ const Play = () => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           { question: quiz.questions[answers.length]!.question, answer },
         ],
-      }).then((res) => router.push(`/result/${res.id}`));
+      }).then((res) => router.replace(`/result/${res.id}`));
     } else {
       setAnswers((prev) => [
         ...prev,

@@ -19,7 +19,21 @@ export const zodQuiz = z.object({
           .min(2, "Question must contain at least 2 options")
           .refine((options) => options.some((option) => option.isCorrect), {
             message: "At least one option must be correct",
-          }),
+          })
+          .refine(
+            (options) =>
+              !options.some((option1, idx1) =>
+                options.some(
+                  (option2, idx2) =>
+                    idx1 !== idx2 &&
+                    option1.option === option2.option &&
+                    option1.option.length
+                )
+              ),
+            {
+              message: "Equal options should not exist",
+            }
+          ),
       })
     )
     .min(3, "Quiz must contain at least 3 questions"),
